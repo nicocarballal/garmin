@@ -1,0 +1,8 @@
+garmin_fit_sdk>=21.141.0
+googlemaps>=4.10.0
+gpxpy>=1.6.2
+matplotlib>=3.4.3
+numpy>=1.20.2
+Requests>=2.32.3
+scipy>=1.7.1
+seaborn>=0.13.2
