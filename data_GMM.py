@@ -39,21 +39,23 @@ def initialize(t, k):
 def plot_multivariate_gaussians(means, covs, colors, t, ax=None):
     """Plots multiple 2D multivariate Gaussian distributions."""
 
-    x, y = np.mgrid[0:t:5, 0:200:1]
+    x, y = np.mgrid[0:t+100:5, 0:200:1]
     pos = np.dstack((x, y))
 
     if ax == None:
         fig, ax = plt.subplots()
+        print('help')
 
     for mean, cov, color in zip(means, covs, colors):
         rv = scipy.stats.multivariate_normal(mean, cov)
-        ax.contour(x, y, rv.pdf(pos), colors=color)
 
-    plt.show()
+        ax.contour(x, y, rv.pdf(pos), levels = np.linspace(0.00001, .0001, 5).tolist(), colors=color)
+
+    return ax 
 
 
 def compute(data):
-    t, k = 2275, 5
+    t, k = data[-1, 0], 5
     x = data[:, 0:2].reshape((len(data), 1, 2))
     n = len(data)
     mu_arr, sigma_arr, pi_arr = initialize(t, k)
@@ -100,19 +102,15 @@ def compute(data):
     # Create a figure and axes
     fig, ax = plt.subplots()
 
+
     plt.scatter(x[:,0,0], x[:,0,1])
     colors = ['r', 'g', 'b', 'y', 'k']
-    plot_multivariate_gaussians(means, covs, colors, t, ax=ax)
+    ax = plot_multivariate_gaussians(means, covs, colors, t, ax=ax)
 
-    
-
-
-    
-
-
-    
-    
-
+    plt.title('Multivariate Gaussian Distribution')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.show()
 
 
 if __name__ == "__main__":
