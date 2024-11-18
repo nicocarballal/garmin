@@ -6,6 +6,7 @@ import numpy as np
 import seaborn as sns
 from get_map_image import get_map_image
 import requests
+import os
 
 
 def average_all_2x2_squares(array_2d):
@@ -25,17 +26,13 @@ def average_all_2x2_squares(array_2d):
 
     return avg_array
 
-API_KEY = "AIzaSyAuaudnqm7MXjoIAYbfwgXyW3pbWH4FyoE"
+API_KEY = os.getenv("GARMIN_KEY")
 
 
 # Parsing an existing file:
 # -------------------------
 
-gpx_file = open('activity_16570365455.gpx', 'r')
-
-gpx = gpxpy.parse(gpx_file)
-
-stream = Stream.from_file("16570365455_ACTIVITY.fit")
+stream = Stream.from_file("17525432425_ACTIVITY.fit")
 decoder = Decoder(stream)
 messages, errors = decoder.read()
 
@@ -43,8 +40,6 @@ messages, errors = decoder.read()
 
 print(type(messages.get('gps_metadata_mesgs')))
 print(messages.get('gps_metadata_mesgs'))
-
-print(gpx)
 
 recorded_messages =  messages.get('record_mesgs')
 
