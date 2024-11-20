@@ -36,9 +36,9 @@ def initialize(t, k):
     pi_arr = initialize_latent(k)
     return mu_arr, sigma_arr, pi_arr
 
-def plot_multivariate_gaussians(means, covs, colors, t, ax=None):
+def plot_multivariate_gaussians(means, covs, colors, x, ax=None):
     """Plots multiple 2D multivariate Gaussian distributions."""
-
+    t = x[-1, 0][0]
     x, y = np.mgrid[0:t+100:5, 0:200:1]
     pos = np.dstack((x, y))
 
@@ -48,13 +48,12 @@ def plot_multivariate_gaussians(means, covs, colors, t, ax=None):
 
     for mean, cov, color in zip(means, covs, colors):
         rv = scipy.stats.multivariate_normal(mean, cov)
-
         ax.contour(x, y, rv.pdf(pos), levels = np.linspace(0.00001, .0001, 5).tolist(), colors=color)
 
     return ax 
 
 
-def compute(data):
+def compute_gaussians(data, plot_bool):
     t, k = data[-1, 0], 5
     x = data[:, 0:2].reshape((len(data), 1, 2))
     n = len(data)
@@ -73,7 +72,7 @@ def compute(data):
     while s < S:
         for n_ in range(n):
             for k_ in range(k):
-                num = pi_arr[k_]*gaussian(x[n_], mu_arr[k_], sigma_arr[k_])
+                num = np.sum(pi_arr[k_]*gaussian(x[n_], mu_arr[k_], sigma_arr[k_]))
                 den = np.sum([pi_arr[j]*gaussian(x[n_], mu_arr[j], sigma_arr[j]) for j in range(k)])
                 if num == 0:
                     r_nk[n_][k_] = 0
@@ -99,20 +98,58 @@ def compute(data):
     means = mu_val[-1][:, 0]
     covs = sigma_val[-1]
 
+    return means, covs
+
+def plot_entirety(data, means, covs, classify=np.zeros((1,2), dtype=np.uint8)):
     # Create a figure and axes
     fig, ax = plt.subplots()
-
-
-    plt.scatter(x[:,0,0], x[:,0,1])
     colors = ['r', 'g', 'b', 'y', 'k']
-    ax = plot_multivariate_gaussians(means, covs, colors, t, ax=ax)
+    x = data[:, 0:2].reshape((len(data), 1, 2))
+    if not classify.any():
+        plt.scatter(x[:,0,0], x[:,0,1])
+    else:
+        color_arr = [colors[classify[j]] for j in range(len(classify))]
+        plt.scatter(x[:,0,0], x[:,0,1], c=color_arr)    
+        ax = plot_multivariate_gaussians(means, covs, colors, x, ax=ax)
 
     plt.title('Multivariate Gaussian Distribution')
     plt.xlabel('X')
     plt.ylabel('Y')
-    plt.show()
+    plt.show()  
+    return 
+    
 
+def classify_points(pts, means, covs):
+    class_arr = np.zeros((len(pts),), dtype=np.uint8)
+    for i, pt in enumerate(pts):
+        match, match_idx = 0, 0
+        for mean, cov, j in zip(means, covs, list(range(len(means)))):
+            rv = scipy.stats.multivariate_normal(mean, cov)
+            if rv.pdf(pt) > match:
+                match = rv.pdf(pt)
+                match_idx = j
+        class_arr[i] = match_idx
+    return class_arr
+    
+
+
+
+    
 
 if __name__ == "__main__":
+    compute_new = False
     data = np.load('data.npy')
-    compute(data)
+    if compute_new:  
+        plot_bool = False 
+        means, covs = compute_gaussians(data, plot_bool)
+        np.save('means', means)
+        np.save('covs', covs)
+    else:
+        means = np.load('means.npy')
+        covs = np.load('covs.npy')
+    class_arr = classify_points(data[:, [0,1]], means, covs)
+    plot_entirety(data, means, covs, class_arr)
+
+    
+
+    
