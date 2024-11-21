@@ -32,7 +32,7 @@ API_KEY = os.getenv("GARMIN_KEY")
 # Parsing an existing file:
 # -------------------------
 
-stream = Stream.from_file("17525432425_ACTIVITY.fit")
+stream = Stream.from_file("16570365455_ACTIVITY.fit")
 decoder = Decoder(stream)
 messages, errors = decoder.read()
 

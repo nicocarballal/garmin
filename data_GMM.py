@@ -148,7 +148,7 @@ if __name__ == "__main__":
         means = np.load('means.npy')
         covs = np.load('covs.npy')
     class_arr = classify_points(data[:, [0,1]], means, covs)
-    plot_entirety(data, means, covs, class_arr)
+    #plot_entirety(data, means, covs, class_arr)
 
     
 
