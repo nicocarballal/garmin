@@ -2,6 +2,7 @@ from cmath import nan
 import numpy as np
 from activity import BikeActivity, SoccerActivity
 import os 
+from file import File 
 
 
 class History:
@@ -10,7 +11,7 @@ class History:
         self.SoccerActivities = list[SoccerActivity]
 
     def getSoccerActivites(self):
-        return self.getSoccerActivites
+        return self.SoccerActivites
     
     def getBikeRides(self):
         return self.BikeRides
@@ -19,11 +20,16 @@ class History:
         for item in os.listdir(path):
             full_path = os.path.join(path, item)
             if os.path.isfile(full_path):
-                print(f"{item} is a directory")
-                self.loadData(full_path)
+                self.loadData(item)
             elif os.path.isdir(full_path):
                 if recursive:
-                    self.loadDataFromPath(full_path)
+                    self.loadDataFromPath(full_path, recursive=True)
+    def loadData(self, file):
+        f = File(file)
+        f = f.createNewFileInstance()
+        a =f.readData()
+        print(a)
+                
                 
 
     
