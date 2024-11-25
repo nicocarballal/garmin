@@ -2,8 +2,11 @@ from distutils.log import error
 import string
 import numpy as np
 import os 
-from garmin_fit_sdk import Decoder, Stream
+from garmin_fit_sdk import Decoder, Stream, Profile
 from pathlib import Path 
+import gpxpy
+from gpxtools import gpxinfo
+from activity import Activity
 
 class File(object):
     file_type = 'unspecified'
@@ -12,9 +15,10 @@ class File(object):
         self.path = self.name
         self.size = self.setSize()
         self.setValidFiles()
-            
-        
     
+    def setActivity(self, activity: Activity):
+        self.activity = activity
+            
     @classmethod 
     def setValidFiles(self):
         self.valid_files = self.__subclasses__()
@@ -60,10 +64,13 @@ class GPX(File):
         return GPX 
 
     def readData(self): 
-        stream = Stream.from_file(self.name)
-        decoder = Decoder(stream)
-        messages, errors = decoder.read()
-        return messages, errors
+        gpx_file = open(self.path, 'r')
+        self.gpx = gpxpy.parse(gpx_file)
+        return 
+    
+    def __repr__(self):
+        return gpxinfo.print_gpx_info(self.gpx, self.name, True, True, True)
+        
     
 
 class FIT(File):
@@ -78,10 +85,13 @@ class FIT(File):
     def getFileType(self):
         return FIT 
     def readData(self): 
-        stream = Stream.from_file(self.name)
-        decoder = Decoder(stream)
-        messages, errors = decoder.read()
-        return messages, errors
+        self.stream = Stream.from_file(self.name)
+        self.decoder = Decoder(self.stream)
+        self.messages, self.errors = self.decoder.read()
+        return 
+    
+    def __repr__(self):
+        return f"{self.__class__.__name__}({self.path!r}, {self.size!r}, {self.errors!r})"
 
 
 class KML(File):

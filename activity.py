@@ -1,11 +1,10 @@
 import numpy as np
 from health import Health, BikeHealth, SoccerHealth
 from datetime import datetime
-from file import File 
+
 
 class Activity:
-    def __init__(self, file):
-        self.file = File(file)
+    def __init__(self):
         self.date = self.setDate(self.file.name)
 
     def setDate(self, file) -> datetime:
@@ -16,8 +15,8 @@ class Activity:
         raise TypeError("Activity does not have Health Info")
 
 class BikeActivity(Activity):
-    def __init__(self, file):
-        super().init(self, file)
+    def __init__(self):
+        super().init(self)
         self.health = BikeHealth()
     
     def getHealth(self) -> Health:
@@ -27,16 +26,16 @@ class BikeActivity(Activity):
         self.distance = distance
 
 class SoccerActivity(Activity):
-    def __init__(self, file):
-        super().init(self, file)
+    def __init__(self):
+        super().init(self)
         self.health = SoccerHealth()
     
     def getHealth(self) -> Health:
         return self.health
 
 class SoccerGame(SoccerActivity):
-    def __init__(self, file):
-        super().__init__(self,file)
+    def __init__(self):
+        super().__init__(self)
 
     def setScore(self, our, theirs):
         self.our_score = our

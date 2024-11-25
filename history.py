@@ -27,8 +27,8 @@ class History:
     def loadData(self, file):
         f = File(file)
         f = f.createNewFileInstance()
-        a =f.readData()
-        print(a)
+        f.readData()
+        return f
                 
                 
 
